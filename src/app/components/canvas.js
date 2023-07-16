@@ -2,49 +2,62 @@
 import { useEffect, useRef, useState } from "react"
 
 export const Canvas = ({ children }) => {
-  const [pointsList, setPointsList] = useState([])
-  const canvasRef = useRef(null)
+  const [absolutePointsList, setAbsolutePointsList] = useState([])
   const [prevScrollPos, setPrevScrollPos] = useState(0)
+  const canvasRef = useRef(null)
 
-  function getCursorCanvasPosition(canvas, event) {
-    const x = event.clientX
-    const y = event.clientY
-    setPointsList([...pointsList, { x, y }])
+  const convertAbsolutePointToRelative = (absolutePoint) => {
+    const { x, y } = absolutePoint
+    const rect = canvasRef.current.getBoundingClientRect()
+    const currentScrollPos = { x: rect.left, y: rect.top }
+    const relativePoint = {
+      x: x + currentScrollPos.x,
+      y: y + currentScrollPos.y,
+    }
+    return relativePoint
+  }
+
+  const createPoint = (event) => {
+    const rect = canvasRef.current.getBoundingClientRect()
+    const currentScrollPos = { x: rect.left, y: rect.top }
+    const distanceYScrolled = prevScrollPos.y - currentScrollPos.y || 0
+    const distanceXScrolled = prevScrollPos.x - currentScrollPos.x || 0
+
+    const absolutePoint = {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    }
+
+    setAbsolutePointsList([...absolutePointsList, absolutePoint])
   }
 
   const handleScroll = () => {
     const rect = canvasRef.current.getBoundingClientRect()
     const currentScrollPos = { x: rect.left, y: rect.top }
-    const distanceYScrolled = prevScrollPos.y - currentScrollPos.y
-    const distanceXScrolled = prevScrollPos.x - currentScrollPos.x
-
-    const updatedPointsList = pointsList.map((point) => ({
-      x: point.x - distanceXScrolled,
-      y: point.y - distanceYScrolled,
-    }))
-
-    setPointsList(updatedPointsList)
     setPrevScrollPos(currentScrollPos)
   }
 
   return (
     <div
       className="h-screen w-screen bg-white overflow-scroll"
-      onClick={(e) => getCursorCanvasPosition(canvasRef.current, e)}
+      onClick={(e) => createPoint(e)}
       style={{ cursor: "crosshair" }}
       onScroll={() => handleScroll()}
     >
-      <div className="text-black h-[2000px] w-[2000px]" ref={canvasRef}>
-        {pointsList.map((point, index) => (
-          <div
-            key={index}
-            className="absolute h-2 w-2 rounded-full bg-red-500"
-            style={{
-              top: point.y - window.scrollY,
-              left: point.x - window.scrollX,
-            }}
-          />
-        ))}
+      <div className="h-[2000px] w-[2000px]" ref={canvasRef}>
+        {absolutePointsList.map((abPoint, index) => {
+          const relPoint = convertAbsolutePointToRelative(abPoint)
+          return (
+            <div
+              key={index}
+              className="absolute h-2 w-2 rounded-full bg-red-500"
+              style={{
+                top: relPoint.y - window.scrollY,
+                left: relPoint.x - window.scrollX,
+              }}
+            />
+          )
+        })}
       </div>
     </div>
   )
