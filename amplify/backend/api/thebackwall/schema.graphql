@@ -1,0 +1,14 @@
+type Oopsie @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  username: String
+  location: String
+  date_time: AWSDateTime
+  coordinates: String
+  drawing_path: String
+}
+
+type Event @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+}
+ 

@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-thebackwall-staging-182648-authRole",
+      "UnauthRoleArn": "arn:aws:iam::969245358929:role/amplify-thebackwall-staging-182648-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::969245358929:role/amplify-thebackwall-staging-182648-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-thebackwall-staging-182648-deployment",
+      "UnauthRoleName": "amplify-thebackwall-staging-182648-unauthRole",
+      "StackName": "amplify-thebackwall-staging-182648",
+      "StackId": "arn:aws:cloudformation:us-west-2:969245358929:stack/amplify-thebackwall-staging-182648/8291f900-16aa-11ee-afd4-0a0f08fbe407",
+      "AmplifyAppId": "dktmx9imeurfm"
+    },
+    "categories": {
+      "auth": {
+        "thebackwall": {}
+      }
+    }
+  }
+}
