@@ -3,26 +3,11 @@ import { useEffect, useRef, useState } from "react"
 
 export const Canvas = ({ children }) => {
   const [absolutePointsList, setAbsolutePointsList] = useState([])
-  const [prevScrollPos, setPrevScrollPos] = useState(0)
+  const [scrollChange, setScrollChange] = useState(0)
   const canvasRef = useRef(null)
-
-  const convertAbsolutePointToRelative = (absolutePoint) => {
-    const { x, y } = absolutePoint
-    const rect = canvasRef.current.getBoundingClientRect()
-    const currentScrollPos = { x: rect.left, y: rect.top }
-    const relativePoint = {
-      x: x + currentScrollPos.x,
-      y: y + currentScrollPos.y,
-    }
-    return relativePoint
-  }
 
   const createPoint = (event) => {
     const rect = canvasRef.current.getBoundingClientRect()
-    const currentScrollPos = { x: rect.left, y: rect.top }
-    const distanceYScrolled = prevScrollPos.y - currentScrollPos.y || 0
-    const distanceXScrolled = prevScrollPos.x - currentScrollPos.x || 0
-
     const absolutePoint = {
       x: event.clientX - rect.left,
       y: event.clientY - rect.top,
@@ -32,9 +17,34 @@ export const Canvas = ({ children }) => {
   }
 
   const handleScroll = () => {
+    setScrollChange(Math.random())
+  }
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScrollChange(Math.random())
+    }
+
+    window.addEventListener("resize", handleResize)
+    return () => {
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [])
+
+  const convertAbsolutePointToRelative = (absolutePoint) => {
+    const { x, y } = absolutePoint
     const rect = canvasRef.current.getBoundingClientRect()
-    const currentScrollPos = { x: rect.left, y: rect.top }
-    setPrevScrollPos(currentScrollPos)
+    const currentScrollPos = {
+      x: rect.left - window.scrollX,
+      y: rect.top - window.scrollY,
+    }
+
+    const relativePoint = {
+      x: x + currentScrollPos.x,
+      y: y + currentScrollPos.y,
+    }
+
+    return relativePoint
   }
 
   return (
@@ -52,8 +62,8 @@ export const Canvas = ({ children }) => {
               key={index}
               className="absolute h-2 w-2 rounded-full bg-red-500"
               style={{
-                top: relPoint.y - window.scrollY,
-                left: relPoint.x - window.scrollX,
+                top: relPoint.y,
+                left: relPoint.x,
               }}
             />
           )
