@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
+import { ColorPicker } from "./colorPicker"
 
 export const Canvas = ({ children }) => {
   const [absolutePointsList, setAbsolutePointsList] = useState([])
@@ -69,6 +70,7 @@ export const Canvas = ({ children }) => {
           )
         })}
       </div>
+      <ColorPicker />
     </div>
   )
 }
