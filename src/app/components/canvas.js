@@ -7,6 +7,7 @@ export const Canvas = ({ children }) => {
   const [currentColor, setCurrentColor] = useState("#000000")
   const [scrollChange, setScrollChange] = useState(0)
   const canvasRef = useRef(null)
+  const bottomRef = useRef(null)
 
   const createPoint = (event) => {
     const rect = canvasRef.current.getBoundingClientRect()
@@ -27,6 +28,9 @@ export const Canvas = ({ children }) => {
     const handleResize = () => {
       setScrollChange(Math.random())
     }
+
+    bottomRef.current.scrollIntoView({ behavior: "instant", inline: "center" })
+    bottomRef
 
     window.addEventListener("resize", handleResize)
     return () => {
@@ -59,34 +63,36 @@ export const Canvas = ({ children }) => {
   }
 
   return (
-    <div
-      className="h-screen w-screen bg-white overflow-scroll"
-      onClick={(e) => createPoint(e)}
-      style={{ cursor: "crosshair" }}
-      onScroll={() => handleScroll()}
-    >
-      <div className="h-[2000px] w-[2000px]" ref={canvasRef}>
-        {absolutePointsList.map((abPoint, index) => {
-          const relPoint = convertAbsolutePointToRelative(abPoint)
-          return (
-            <div
-              key={index}
-              className="absolute h-2 w-2 rounded-full"
-              style={{
-                top: relPoint.y,
-                left: relPoint.x,
-                backgroundColor: abPoint.color,
-              }}
-            />
-          )
-        })}
+    <>
+      <div
+        className="h-screen w-screen bg-white overflow-scroll"
+        onClick={(e) => createPoint(e)}
+        style={{ cursor: "crosshair" }}
+        onScroll={() => handleScroll()}
+      >
+        <div className="h-[2000px] w-[2000px]" ref={canvasRef}>
+          {absolutePointsList.map((abPoint, index) => {
+            const relPoint = convertAbsolutePointToRelative(abPoint)
+            return (
+              <div
+                key={index}
+                className="absolute h-2 w-2 rounded-full"
+                style={{
+                  top: relPoint.y,
+                  left: relPoint.x,
+                  backgroundColor: abPoint.color,
+                }}
+              />
+            )
+          })}
+        </div>
+        <span>
+          <ColorPicker onClickCapture={handleColorPickerClick} />
+        </span>
+        <div className="w-[2000px] flex items-center justify-center">
+          <span className="flex h-0 w-0" ref={bottomRef} />
+        </div>
       </div>
-      <span>
-        <ColorPicker
-          // onClick={setCurrentColor}
-          onClickCapture={handleColorPickerClick}
-        />
-      </span>
-    </div>
+    </>
   )
 }
