@@ -4,6 +4,7 @@ import { ColorPicker } from "./colorPicker"
 
 export const Canvas = ({ children }) => {
   const [absolutePointsList, setAbsolutePointsList] = useState([])
+  const [currentColor, setCurrentColor] = useState("#000000")
   const [scrollChange, setScrollChange] = useState(0)
   const canvasRef = useRef(null)
 
@@ -12,6 +13,7 @@ export const Canvas = ({ children }) => {
     const absolutePoint = {
       x: event.clientX - rect.left,
       y: event.clientY - rect.top,
+      color: currentColor,
     }
 
     setAbsolutePointsList([...absolutePointsList, absolutePoint])
@@ -41,11 +43,19 @@ export const Canvas = ({ children }) => {
     }
 
     const relativePoint = {
-      x: x + currentScrollPos.x,
-      y: y + currentScrollPos.y,
+      x: x + currentScrollPos.x - 5,
+      y: y + currentScrollPos.y - 5,
+      color: absolutePoint.color,
     }
 
     return relativePoint
+  }
+
+  const handleColorPickerClick = (e, color) => {
+    if (!e) var e = window.event
+    e.cancelBubble = true
+    if (e.stopPropagation) e.stopPropagation()
+    setCurrentColor(color)
   }
 
   return (
@@ -61,16 +71,22 @@ export const Canvas = ({ children }) => {
           return (
             <div
               key={index}
-              className="absolute h-2 w-2 rounded-full bg-red-500"
+              className="absolute h-2 w-2 rounded-full"
               style={{
                 top: relPoint.y,
                 left: relPoint.x,
+                backgroundColor: abPoint.color,
               }}
             />
           )
         })}
       </div>
-      <ColorPicker />
+      <span>
+        <ColorPicker
+          // onClick={setCurrentColor}
+          onClickCapture={handleColorPickerClick}
+        />
+      </span>
     </div>
   )
 }
